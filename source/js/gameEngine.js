@@ -30,6 +30,8 @@ function GameEngine(settings) {
     this.gameObjects = [this.player];
 
     this.shoot = function(x, y) {
+        if (!this.running) return;
+
         this.player.shoot(x, y);
     };
 
@@ -50,6 +52,8 @@ function GameEngine(settings) {
         engine.dt = timestamp - engine.lastTimestamp;
         engine.lastTimestamp = timestamp;
 
+        ctx.clearRect(0, 0, gameInfo.w, gameInfo.h);
+
         engine.animateObjects();
         engine.calculateNextStep();
         engine.showFPS();
@@ -64,11 +68,10 @@ function GameEngine(settings) {
             this.fps = fpsCounter;
             fpsCounter = 0;
             fpsTime = 0;
-            ctx.clearRect(0, 0, 150, 150);
-            ctx.fillText('FPS:' + this.fps, 10, 20);
         }
         ++fpsCounter;
         fpsTime += this.dt;
+        ctx.fillText('FPS:' + this.fps, 10, 20);
     };
 
     this.hideFPS = function() {

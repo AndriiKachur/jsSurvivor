@@ -22,9 +22,6 @@ window.addEventListener('load', function() {
         gameEngine.shoot(event.pageX, event.pageY);
         return false;
     };
-    document.onmouseup = function() {
-        gameEngine.shoot();
-    };
     document.onmousemove = function (event) {
         gameEngine.gameInfo.mouseX = (event.pageX - canvasOffset.left) / canvasScale;
         gameEngine.gameInfo.mouseY = (event.pageY - canvasOffset.top) / canvasScale;

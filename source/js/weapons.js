@@ -25,15 +25,12 @@ function Bullet(x, y, tox, toy) {
     this.y = y;
     this.toX = tox;
     this.toY = toy;
-    this.velocity = 400;
-
+    this.velocity = 300;
     this.w = 1;
     this.h = 1;
+    this.angle = Math.atan2(this.toY - this.y, this.toX - this.x);
 
     this.draw = function(ctx, gameInfo) {
-        if (this.isMoved()) {
-            ctx.clearRect(this.oldX >> 0, this.oldY >> 0, this.w * 2, this.h * 2);
-        }
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.w, 0, 360, false);
         ctx.fill();
@@ -42,10 +39,15 @@ function Bullet(x, y, tox, toy) {
     this.calculateNextStep = function(dt, gameInfo) {
         var dx = 0, dy = 0;
 
-        //TODO: get new coordinates
+        var distance = this.velocity * (dt / 1000);
 
-        this.x += dx;
-        this.y += dy;
+        dx = Math.cos(this.angle) * distance;
+        dy = Math.sin(this.angle) * distance;
+
+        this.backupOld();
+        dx && (this.x += dx);
+        dy && (this.y += dy);
+
     };
 
 }
