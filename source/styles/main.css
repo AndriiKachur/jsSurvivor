@@ -1,0 +1,41 @@
+body {
+    overflow: hidden;
+}
+
+.container {
+    height: 900px;
+    width: 1120px;
+    overflow: hidden;
+}
+
+#mainCanvas {
+    display: block;
+    float: left;
+    width: 900px;
+    cursor: crosshair;
+    border : 1px solid black;
+}
+
+.infoDiv {
+    float: left;
+    width: 200px;
+    padding-left: 15px;
+}
+
+#startButton {
+    background-color: cornsilk;
+    line-height: 27px;
+    font: large Arial;
+    width: 70px;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+#stopButton {
+    background-color: coral;
+    line-height: 27px;
+    font: large Arial;
+    width: 70px;
+    border: 2px solid black;
+    border-radius: 5px;
+}
