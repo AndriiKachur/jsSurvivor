@@ -1,9 +1,8 @@
 function Player(gameInfo) {
     this.gameInfo = gameInfo;
-    this.w = 10;
-    this.h = 10;
-    this.x = 0;
-    this.y = 0;
+    this.h = this.w = 10;
+    this.gameInfo.playerY = this.y = gameInfo.h / 2;
+    this.gameInfo.playerX = this.x = gameInfo.w / 2;
     this.velocity = 100;
     this.weapon = new BaseWeapon(this.gameInfo, this);
 
@@ -32,8 +31,8 @@ function Player(gameInfo) {
             dy = 0;
         }
 
-        dx && (this.x += dx);
-        dy && (this.y += dy);
+        dx && (this.gameInfo.playerX = this.x += dx);
+        dy && (this.gameInfo.playerY = this.y += dy);
 
         this.weapon.calculateNextStep(dt);
     };
@@ -42,16 +41,14 @@ function Player(gameInfo) {
     this.shoot = function(isOn) {
         if (!isOn) {
             this.weapon.fire = false;
-            shootInterval && clearInterval(shootInterval);
-            shootInterval = 0;
+            shootInterval && shootInterval();
+            shootInterval = null;
         } else if (!shootInterval) {
             this.weapon.fire = true;
 
             var player = this;
             player.weapon.shoot();
-            shootInterval = setInterval(function() {
-                player.weapon.shoot();
-            }, this.weapon.fireDelay);
+            shootInterval = UTILS.setInterval(player.weapon.shoot, this.weapon.fireDelay, player.weapon);
         }
     };
 

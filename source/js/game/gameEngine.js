@@ -8,7 +8,9 @@ function GameEngine(settings) {
             h: settings.height,
             direction: '',
             mouseX: 0,
-            mouseY: 0
+            mouseY: 0,
+            playerX: 0,
+            playerY: 0
         };
 
     canvas.width = gameInfo.w;
@@ -20,12 +22,7 @@ function GameEngine(settings) {
     this.running = false;
     this.fps = 0;
     this.gameInfo = gameInfo;
-    this.player = function addPlayer() {
-        var p = new Player(gameInfo);
-        p.x = gameInfo.w / 2;
-        p.y = gameInfo.h / 2;
-        return p;
-    }();
+    this.player = new Player(gameInfo);
     this.gameObjects = [this.player];
 
     this.shoot = function(isOn) {
@@ -38,7 +35,7 @@ function GameEngine(settings) {
 
     this.start = function() {
         if (this.running) return;
-
+        this.startGenerateEnemies();
         this.running = true;
         engine.lastTimestamp = 0;
         this.render(0);
@@ -46,7 +43,18 @@ function GameEngine(settings) {
 
     this.stop = function() {
         this.running = false;
+        this.stopGenerateEnemies();
         this.hideFPS();
+    };
+
+    var monstersGenerator = null;
+    this.startGenerateEnemies = function() {
+        monstersGenerator = UTILS.setInterval(function() {
+            engine.gameObjects.push(new Enemy(gameInfo));
+        }, 410);
+    };
+    this.stopGenerateEnemies = function() {
+        monstersGenerator && monstersGenerator();
     };
 
     this.render = function(timestamp) {
@@ -112,6 +120,7 @@ function GameEngine(settings) {
                 } else {
                     engine.start();
                 }
+                settings.toggleGameControls && settings.toggleGameControls(engine.running);
             }
         };
         window.onkeyup = function (event) {

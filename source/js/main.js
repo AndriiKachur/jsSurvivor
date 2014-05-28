@@ -5,16 +5,24 @@ window.addEventListener('load', function() {
         gameEngine = new GameEngine({
             canvas: canvas,
             width: 900,
-            height: 500
+            height: 500,
+            toggleGameControls: toggleButtons
         });
+
+    function toggleButtons(isPlaying){
+        startButton.disabled = isPlaying;
+        stopButton.disabled = !isPlaying;
+    }
 
     gameEngine.bindControls();
 
     startButton.addEventListener('click', function() {
         gameEngine.start();
+        toggleButtons(true);
     });
     stopButton.addEventListener('click', function() {
         gameEngine.stop();
+        toggleButtons(false);
     });
 
 }, false);

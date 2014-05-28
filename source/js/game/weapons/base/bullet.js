@@ -16,7 +16,7 @@ function Bullet(gameInfo, x, y) {
     };
 
     this.calculateNextStep = function(dt) {
-        var distance = this.velocity * (dt / 1000),
+        var distance = this.velocity * dt / 1000,
             dx = Math.cos(this.angle) * distance,
             dy = Math.sin(this.angle) * distance;
 
