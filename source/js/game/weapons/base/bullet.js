@@ -8,6 +8,7 @@ function Bullet(gameInfo, x, y) {
     this.damage = 100;
     this.w = 1;
     this.h = 1;
+    this.wide = 1;
     this.angle = Math.atan2(this.toY - this.y, this.toX - this.x);
 
     this.collisionTargets[Enemy.name] = function(target) {
@@ -30,6 +31,10 @@ function Bullet(gameInfo, x, y) {
 
         dx && (this.x += dx);
         dy && (this.y += dy);
+
+        if (this.isOutOfCanvas(dx, dy)) {
+            this.toRemove = true;
+        }
     };
 
 }

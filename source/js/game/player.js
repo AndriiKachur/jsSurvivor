@@ -1,11 +1,16 @@
 function Player(gameInfo) {
     this.gameInfo = gameInfo;
     this.h = this.w = 10;
-    this.gameInfo.playerY = this.y = gameInfo.h / 2;
-    this.gameInfo.playerX = this.x = gameInfo.w / 2;
+    this.wide = UTILS.hypot(this.h, this.w/2, 0, 0);
+    this.y = gameInfo.h / 2;
+    this.x = gameInfo.w / 2;
     this.velocity = 100;
     this.weapon = new BaseWeapon(this.gameInfo, this);
     this.health = 100;
+
+    this.collisionTargets[Enemy.name] = function(target) {
+        target.hit(this);
+    };
 
     this.draw = function (ctx) {
         ctx.fillRect(this.x, this.y, this.w, this.h);
@@ -32,8 +37,8 @@ function Player(gameInfo) {
             dy = 0;
         }
 
-        dx && (this.gameInfo.playerX = this.x += dx);
-        dy && (this.gameInfo.playerY = this.y += dy);
+        dx && (this.gameInfo.player.x = this.x += dx);
+        dy && (this.gameInfo.player.y = this.y += dy);
 
         this.weapon.calculateNextStep(dt);
     };

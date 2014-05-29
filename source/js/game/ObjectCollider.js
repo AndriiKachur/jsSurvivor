@@ -12,6 +12,8 @@ function ObjectCollider(gameInfo, gameObjects) {
     };
 
     this.collide = function(obj1, obj2) {
+        if (obj1.toRemove || obj2.toRemove) return;
+
         var colFn = null;
         colFn = obj1.collisionFn(obj2);
         colFn && obj1.collide(obj2, colFn);

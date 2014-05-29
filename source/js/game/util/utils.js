@@ -4,9 +4,7 @@ var UTILS = {
 
         for (var i = array.length - 1; i >= 0; i--) {
             array[i].calculateNextStep(dt);
-            if (array[i].toRemove) {
-                array.splice(i, 1);
-            }
+            if (array[i].toRemove) array.splice(i, 1);
         }
     },
 
@@ -34,6 +32,14 @@ var UTILS = {
         var handler = setInterval(func, delay);
         return function() {
             clearInterval(handler);
+        }
+    },
+
+    setTimeout: function(fn, delay, context) {
+        var func = context ? function(){ fn.call(context);} : fn;
+        var handler = setTimeout(func, delay);
+        return function() {
+            clearTimeout(handler);
         }
     }
 };

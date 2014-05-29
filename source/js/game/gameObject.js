@@ -25,9 +25,8 @@ function GameObject(gameInfo) {
     };
 
     this.collisionFn = function(target) {
-        var collisionFn = this.collisionTargets[target.fn.name];
-        if (collisionFn) {
-            return this.inCollisionRange(target) && collisionFn;
+        if (target.fn.name in this.collisionTargets) {
+            return this.inCollisionRange(target) && this.collisionTargets[target.fn.name];
         } else {
             return null;
         }
@@ -35,7 +34,7 @@ function GameObject(gameInfo) {
 
     this.inCollisionRange = function(target) {
         var distance = UTILS.hypot(this.x, this.y, target.x, target.y);
-        return UTILS.hypot(target.w, target.w, this.h, this.h) >= distance;
+        return target.wide + this.wide >= distance;
     };
 
     this.checkDead = function() {
@@ -46,6 +45,7 @@ function GameObject(gameInfo) {
             }
             return this.toRemove = true;
         }
+        return this.toRemove;
     };
 }
 

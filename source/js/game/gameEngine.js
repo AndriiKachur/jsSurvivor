@@ -10,22 +10,33 @@ function GameEngine(settings) {
             direction: '',
             mouseX: 0,
             mouseY: 0,
-            playerX: 0,
-            playerY: 0
+            player: null
         };
 
-    canvas.width = gameInfo.w;
-    canvas.height = gameInfo.h;
-    ctx.font = 'italic 15pt Arial';
+    this.reset = function() {
+        gameInfo.w = settings.width;
+        gameInfo.h = settings.height;
+        gameInfo.score = 0;
+        gameInfo.direction = '';
+        gameInfo.mouseX = 0;
+        gameInfo.mouseY = 0;
 
-    this.lastTimestamp = null;
-    this.dt = null;
-    this.running = false;
-    this.fps = 0;
-    this.gameInfo = gameInfo;
-    this.player = new Player(gameInfo);
-    this.gameObjects = [this.player];
-    this.objectCollider = new ObjectCollider(this.gameInfo, this.gameObjects);
+        canvas.width = gameInfo.w;
+        canvas.height = gameInfo.h;
+        ctx.font = 'italic 15pt Arial';
+
+        this.lastTimestamp = null;
+        this.dt = null;
+        this.running = false;
+        this.fps = 0;
+        this.gameInfo = gameInfo;
+        gameInfo.player = this.player = new Player(gameInfo);
+        this.gameObjects = [this.player];
+        this.objectCollider = new ObjectCollider(this.gameInfo, this.gameObjects);
+        this.end = '';
+    };
+
+    this.reset();
 
     this.shoot = function(isOn) {
         this.player.weapon.fire = !!isOn;
@@ -37,6 +48,7 @@ function GameEngine(settings) {
 
     this.start = function() {
         if (this.running) return;
+        if (this.end) this.reset();
         this.startGenerateEnemies();
         this.running = true;
         engine.lastTimestamp = 0;
@@ -64,14 +76,19 @@ function GameEngine(settings) {
         engine.dt = timestamp - engine.lastTimestamp;
         engine.lastTimestamp = timestamp;
 
-        ctx.clearRect(0, 0, gameInfo.w, gameInfo.h);
-        engine.drawAll();
+        if (engine.end) {
+            ctx.fillText(engine.end, engine.gameInfo.w / 2, engine.gameInfo.h / 2);
+        } else {
+            ctx.clearRect(0, 0, gameInfo.w, gameInfo.h);
+            engine.drawAll();
+        }
 
         if (engine.running) {
-            engine.calculateNextStep();
             engine.objectCollider.checkCollisions(engine.player.getBullets());
+            engine.calculateNextStep();
             engine.showFPS();
             engine.showScore();
+            engine.showHealth();
             requestAnimationFrame(engine.render, canvas);
         }
     };
@@ -94,6 +111,15 @@ function GameEngine(settings) {
 
     this.showScore = function () {
         ctx.fillText('Score:' + this.gameInfo.score, this.gameInfo.w - 150, 20);
+    };
+    this.showHealth = function () {
+        var hp = this.player.health;
+        if (hp <= 0) {
+            hp = 0;
+            this.end = 'DEFEAT';
+            this.stop();
+        }
+        ctx.fillText('Health:' + hp, this.gameInfo.w - 150, 45);
     };
 
     this.drawAll = function() {

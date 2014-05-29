@@ -2,15 +2,31 @@ function Enemy(gameInfo) {
     this.gameInfo = gameInfo;
 
     this.h = this.w = 7;
-    this.velocity = 110;
+    this.wide = this.h;
+    this.velocity = 90;
     this.health = 100;
+    this.damage = 4;
+    this.reloadTime = 1000;
+    this.isReloading = false;
     this.score = 1;
 
     this.collisionTargets[Bullet.name] = function(target) {
         this.health -= target.damage;
+        this.checkDead();
     };
 
     UTILS.randomBorderPosition(this, this.gameInfo);
+
+    this.hit = function(player) {
+        if (this.isReloading) return;
+
+        this.isReloading = true;
+        player.health -= this.damage;
+        var that = this;
+        UTILS.setTimeout(function() {
+           that.isReloading = false;
+        }, this.reloadTime);
+    };
 
     this.draw = function(ctx) {
         ctx.beginPath();
@@ -24,12 +40,15 @@ function Enemy(gameInfo) {
         if (this.checkDead()) return;
 
         var distance = this.velocity * dt / 1000,
-            angle = Math.atan2(this.gameInfo.playerY - this.y, this.gameInfo.playerX - this.x),
+            angle = Math.atan2(this.gameInfo.player.y + this.gameInfo.player.h / 2 - this.y,
+                                this.gameInfo.player.x + this.gameInfo.player.w / 2 - this.x),
             dx = Math.cos(angle) * distance,
             dy = Math.sin(angle) * distance;
 
         dx && (this.x += dx);
         dy && (this.y += dy);
+
+        this.checkDead();
     };
 }
 
