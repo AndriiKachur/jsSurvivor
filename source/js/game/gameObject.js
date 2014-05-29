@@ -16,8 +16,8 @@ function GameObject(gameInfo) {
     };
 
     this.isOutOfCanvas = function(dx, dy) {
-        return  (this.x + this.w + dx > this.gameInfo.w) || (this.x + dx < 0 )
-            || (this.y + this.h + dy > this.gameInfo.h) || (this.y + dy < 0);
+        return  (this.x + this.w / 2 + dx > this.gameInfo.w) || (this.x - this.w / 2 + dx < 0 )
+            || (this.y + this.h / 2 + dy > this.gameInfo.h) || (this.y - this.h / 2 + dy < 0);
     };
 
     this.collide = function(target, collisionFn) {

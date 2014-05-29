@@ -3,7 +3,7 @@ function Enemy(gameInfo) {
 
     this.h = this.w = 7;
     this.wide = this.h;
-    this.velocity = 90;
+    this.velocity = 70;
     this.health = 100;
     this.damage = 4;
     this.reloadTime = 1000;
@@ -40,8 +40,8 @@ function Enemy(gameInfo) {
         if (this.checkDead()) return;
 
         var distance = this.velocity * dt / 1000,
-            angle = Math.atan2(this.gameInfo.player.y + this.gameInfo.player.h / 2 - this.y,
-                                this.gameInfo.player.x + this.gameInfo.player.w / 2 - this.x),
+            angle = Math.atan2(this.gameInfo.player.y - this.y,
+                                this.gameInfo.player.x - this.x),
             dx = Math.cos(angle) * distance,
             dy = Math.sin(angle) * distance;
 

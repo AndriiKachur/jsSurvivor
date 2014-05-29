@@ -13,6 +13,8 @@ function GameEngine(settings) {
             player: null
         };
 
+    window.ctx = ctx;
+
     this.reset = function() {
         gameInfo.w = settings.width;
         gameInfo.h = settings.height;

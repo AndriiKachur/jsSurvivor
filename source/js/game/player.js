@@ -1,6 +1,6 @@
 function Player(gameInfo) {
     this.gameInfo = gameInfo;
-    this.h = this.w = 10;
+    this.h = this.w = 30;
     this.wide = UTILS.hypot(this.h, this.w/2, 0, 0);
     this.y = gameInfo.h / 2;
     this.x = gameInfo.w / 2;
@@ -13,7 +13,15 @@ function Player(gameInfo) {
     };
 
     this.draw = function (ctx) {
-        ctx.fillRect(this.x, this.y, this.w, this.h);
+        var degreesAngle = (Math.atan2(this.y - this.gameInfo.mouseY, this.gameInfo.mouseX - this.x) * 180 / Math.PI + 360) % 360,
+            part = 360/12;
+
+        ctx.drawImage(RES.player.img,
+                ((degreesAngle/part) >> 0) * RES.player.spriteSize,
+            this.weapon.fire ? RES.player.spriteSize : 0,
+            RES.player.spriteSize, RES.player.spriteSize, this.x - this.w/2, this.y - this.h/2, this.w, this.h);
+        //ctx.fillRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h)
+
         this.weapon.draw(ctx);
     };
 

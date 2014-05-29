@@ -4,11 +4,9 @@ function Bullet(gameInfo, x, y) {
     this.y = y;
     this.toX = this.gameInfo.mouseX;
     this.toY = this.gameInfo.mouseY;
-    this.velocity = 300;
+    this.velocity = 400;
     this.damage = 100;
-    this.w = 1;
-    this.h = 1;
-    this.wide = 1;
+    this.wide = this.h = this.w = 2;
     this.angle = Math.atan2(this.toY - this.y, this.toX - this.x);
 
     this.collisionTargets[Enemy.name] = function(target) {
