@@ -5,6 +5,7 @@ function Player(gameInfo) {
     this.gameInfo.playerX = this.x = gameInfo.w / 2;
     this.velocity = 100;
     this.weapon = new BaseWeapon(this.gameInfo, this);
+    this.health = 100;
 
     this.draw = function (ctx) {
         ctx.fillRect(this.x, this.y, this.w, this.h);
@@ -52,6 +53,11 @@ function Player(gameInfo) {
         }
     };
 
+    this.getBullets = function() {
+        return [].concat(this.weapon.bullets);
+    };
+
 }
 
 Player.prototype = new GameObject();
+Player.prototype.fn = Player;

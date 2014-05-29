@@ -4,6 +4,11 @@ function Enemy(gameInfo) {
     this.h = this.w = 7;
     this.velocity = 110;
     this.health = 100;
+    this.score = 1;
+
+    this.collisionTargets[Bullet.name] = function(target) {
+        this.health -= target.damage;
+    };
 
     UTILS.randomBorderPosition(this, this.gameInfo);
 
@@ -16,6 +21,8 @@ function Enemy(gameInfo) {
     };
 
     this.calculateNextStep = function(dt) {
+        if (this.checkDead()) return;
+
         var distance = this.velocity * dt / 1000,
             angle = Math.atan2(this.gameInfo.playerY - this.y, this.gameInfo.playerX - this.x),
             dx = Math.cos(angle) * distance,
@@ -23,10 +30,8 @@ function Enemy(gameInfo) {
 
         dx && (this.x += dx);
         dy && (this.y += dy);
-
-        if (this.health <= 0) {
-            this.toRemove = true;
-        }
     };
 }
+
 Enemy.prototype = new GameObject();
+Enemy.prototype.fn = Enemy;

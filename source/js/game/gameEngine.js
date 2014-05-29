@@ -6,6 +6,7 @@ function GameEngine(settings) {
         gameInfo = {
             w: settings.width,
             h: settings.height,
+            score: 0,
             direction: '',
             mouseX: 0,
             mouseY: 0,
@@ -24,6 +25,7 @@ function GameEngine(settings) {
     this.gameInfo = gameInfo;
     this.player = new Player(gameInfo);
     this.gameObjects = [this.player];
+    this.objectCollider = new ObjectCollider(this.gameInfo, this.gameObjects);
 
     this.shoot = function(isOn) {
         this.player.weapon.fire = !!isOn;
@@ -67,12 +69,14 @@ function GameEngine(settings) {
 
         if (engine.running) {
             engine.calculateNextStep();
+            engine.objectCollider.checkCollisions(engine.player.getBullets());
             engine.showFPS();
+            engine.showScore();
             requestAnimationFrame(engine.render, canvas);
         }
     };
 
-    this.showFPS = function countFPS() {
+    this.showFPS = function() {
         if (fpsTime > 1000) {
             this.fps = fpsCounter;
             fpsCounter = 0;
@@ -86,6 +90,10 @@ function GameEngine(settings) {
     this.hideFPS = function() {
         fpsTime = 0;
         fpsCounter = 0;
+    };
+
+    this.showScore = function () {
+        ctx.fillText('Score:' + this.gameInfo.score, this.gameInfo.w - 150, 20);
     };
 
     this.drawAll = function() {

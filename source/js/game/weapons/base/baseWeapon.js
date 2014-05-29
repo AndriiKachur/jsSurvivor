@@ -22,4 +22,6 @@ function BaseWeapon(gameInfo, player) {
     };
 
 }
+
 BaseWeapon.prototype = new GameObject();
+BaseWeapon.prototype.fn = BaseWeapon;
