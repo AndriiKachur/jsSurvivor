@@ -78,7 +78,7 @@ module.exports = function(grunt) {
                       flatten: true,
                       dest: 'dist/',
                       src: [
-                          'source/**/*.{ico,png,txt}',
+                          'source/**/*.{ico,png,txt,jpg}',
                           'source/**/*.css'
                       ]
                   },

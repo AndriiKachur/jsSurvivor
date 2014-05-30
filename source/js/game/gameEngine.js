@@ -10,7 +10,9 @@ function GameEngine(settings) {
             direction: '',
             mouseX: 0,
             mouseY: 0,
-            player: null
+            player: null,
+            gameObjects: null,
+            showCollisions: false
         };
 
     window.ctx = ctx;
@@ -33,7 +35,10 @@ function GameEngine(settings) {
         this.fps = 0;
         this.gameInfo = gameInfo;
         gameInfo.player = this.player = new Player(gameInfo);
-        this.gameObjects = [this.player];
+        gameInfo.gameObjects = this.gameObjects = [this.player];
+
+        UTILS.inverseArray(gameInfo.gameObjects); // for drawing order
+
         this.objectCollider = new ObjectCollider(this.gameInfo, this.gameObjects);
         this.end = '';
     };
@@ -81,7 +86,6 @@ function GameEngine(settings) {
         if (engine.end) {
             ctx.fillText(engine.end, engine.gameInfo.w / 2, engine.gameInfo.h / 2);
         } else {
-            ctx.clearRect(0, 0, gameInfo.w, gameInfo.h);
             engine.drawAll();
         }
 
@@ -121,13 +125,27 @@ function GameEngine(settings) {
             this.end = 'DEFEAT';
             this.stop();
         }
-        ctx.fillText('Health:' + hp, this.gameInfo.w - 150, 45);
+        ctx.fillText('HP:' + hp, this.gameInfo.w - 150, 45);
     };
 
     this.drawAll = function() {
+        ctx.clearRect(0, 0, gameInfo.w, gameInfo.h);
+        ctx.drawImage(RES.background.img, 0, 0);
+
         this.gameObjects.forEach(function(object) {
             object.draw(ctx);
+            gameInfo.showCollisions && UTILS.showCollision(ctx, object);
         });
+
+        this.showMouse();
+    };
+
+    this.showMouse = function() {
+        ctx.drawImage(RES.crosshair.img,
+                this.player.weapon.crosshair * RES.crosshair.spriteSize, 0,
+                RES.crosshair.spriteSize, RES.crosshair.spriteSize,
+                gameInfo.mouseX - this.player.weapon.crosshairSize, gameInfo.mouseY - this.player.weapon.crosshairSize,
+                this.player.weapon.crosshairSize, this.player.weapon.crosshairSize);
     };
 
     this.calculateNextStep = function() {

@@ -3,7 +3,9 @@ function BaseWeapon(gameInfo, player) {
     this.player = player;
     this.bullets = [];
     this.fire = false;
-    this.fireDelay = 150;
+    this.fireDelay = 300;
+    this.crosshair = 0;
+    this.crosshairSize = 25;
 
     this.shoot = function() {
         if (this.fire) {

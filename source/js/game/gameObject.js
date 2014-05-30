@@ -39,14 +39,22 @@ function GameObject(gameInfo) {
 
     this.checkDead = function() {
         if (this.health <= 0) {
+            this.dead = 0;
             if (this.score > 0) {
                 this.gameInfo.score += this.score;
                 this.score = 0;
+                this.dropLoot();
             }
             return this.toRemove = true;
         }
         return this.toRemove;
     };
+
+    this.dropLoot = function() {
+
+    };
+
+
 }
 
 GameObject.prototype.fn = GameObject;

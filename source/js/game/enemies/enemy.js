@@ -1,8 +1,10 @@
-function Enemy(gameInfo) {
+function Enemy(gameInfo, x, y) {
     this.gameInfo = gameInfo;
 
-    this.h = this.w = 7;
-    this.wide = this.h;
+    this.h = this.w = 30;
+    this.x = x;
+    this.y = y;
+    this.wide = (this.h + this.w) / 4;
     this.velocity = 70;
     this.health = 100;
     this.damage = 4;
@@ -15,29 +17,27 @@ function Enemy(gameInfo) {
         this.checkDead();
     };
 
-    UTILS.randomBorderPosition(this, this.gameInfo);
+    !x && !y && UTILS.randomBorderPosition(this, this.gameInfo);
 
     this.hit = function(player) {
-        if (this.isReloading) return;
+        if (this.isReloading || this.dead) return;
 
         this.isReloading = true;
         player.health -= this.damage;
-        var that = this;
         UTILS.setTimeout(function() {
-           that.isReloading = false;
-        }, this.reloadTime);
+           this.isReloading = false;
+        }, this.reloadTime, this);
     };
 
     this.draw = function(ctx) {
-        ctx.beginPath();
-        ctx.fillStyle = 'red';
-        ctx.arc(this.x, this.y, this.w, 0, 360, false);
-        ctx.fill();
-        ctx.fillStyle = 'black';
+        ctx.drawImage(RES.enemy.img,
+            0, 0,
+            RES.enemy.spriteSize, RES.enemy.spriteSize,
+            this.x - this.w/2, this.y - this.h/2, this.w, this.h);
     };
 
     this.calculateNextStep = function(dt) {
-        if (this.checkDead()) return;
+        if (this.checkDead() || this.dead) return;
 
         var distance = this.velocity * dt / 1000,
             angle = Math.atan2(this.gameInfo.player.y - this.y,
@@ -47,9 +47,35 @@ function Enemy(gameInfo) {
 
         dx && (this.x += dx);
         dy && (this.y += dy);
-
-        this.checkDead();
     };
+
+    var deathAnimated = null;
+    this.dropLoot = function() {
+        if (UTILS.random() <= 0.3) {
+            var drop = new Medkit(this.gameInfo, this.x, this.y);
+            this.gameInfo.gameObjects.push(drop);
+        };
+
+        var dead = this.getDead();
+        gameInfo.gameObjects.push(dead);
+        deathAnimated = UTILS.setTimeout(function () {
+            dead.toRemove = true;
+        }, 5000, this);
+    };
+
+    this.getDead = function() {
+        var dead = new Enemy(gameInfo, this.x, this.y),
+            imgX = UTILS.random() & 1 ? 0 : RES.enemy.spriteSize;
+        dead.dead = true;
+        dead.draw = function() {
+            ctx.drawImage(RES.enemy.dead,
+                imgX, 0,
+                RES.enemy.spriteSize, RES.enemy.spriteSize,
+                this.x - this.w/2, this.y - this.h/2, this.w, this.h);
+        };
+        return dead;
+    };
+
 }
 
 Enemy.prototype = new GameObject();

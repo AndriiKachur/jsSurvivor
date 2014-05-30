@@ -12,7 +12,7 @@ function ObjectCollider(gameInfo, gameObjects) {
     };
 
     this.collide = function(obj1, obj2) {
-        if (obj1.toRemove || obj2.toRemove) return;
+        if (obj1.toRemove || obj1.dead || obj2.toRemove || obj2.dead) return;
 
         var colFn = null;
         colFn = obj1.collisionFn(obj2);

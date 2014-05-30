@@ -41,5 +41,24 @@ var UTILS = {
         return function() {
             clearTimeout(handler);
         }
+    },
+
+    showCollision: function(ctx, obj) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = 'red';
+        ctx.arc(obj.x, obj.y, obj.wide, 0, 360, false);
+        ctx.stroke();
+
+        ctx.restore();
+    },
+
+    inverseArray: function(arr) {
+        arr.push = function() {
+            Array.prototype.unshift.apply(this, arguments);
+        };
+        arr.unshift = function() {
+            Array.prototype.push.apply(this, arguments);
+        };
     }
 };

@@ -1,7 +1,7 @@
 function Player(gameInfo) {
     this.gameInfo = gameInfo;
     this.h = this.w = 30;
-    this.wide = UTILS.hypot(this.h, this.w/2, 0, 0);
+    this.wide = (this.w + this.h) / 4;
     this.y = gameInfo.h / 2;
     this.x = gameInfo.w / 2;
     this.velocity = 100;
@@ -9,6 +9,9 @@ function Player(gameInfo) {
     this.health = 100;
 
     this.collisionTargets[Enemy.name] = function(target) {
+        target.hit(this);
+    };
+    this.collisionTargets[Medkit.name] = function(target) {
         target.hit(this);
     };
 
@@ -20,7 +23,6 @@ function Player(gameInfo) {
                 ((degreesAngle/part) >> 0) * RES.player.spriteSize,
             this.weapon.fire ? RES.player.spriteSize : 0,
             RES.player.spriteSize, RES.player.spriteSize, this.x - this.w/2, this.y - this.h/2, this.w, this.h);
-        //ctx.fillRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h)
 
         this.weapon.draw(ctx);
     };
