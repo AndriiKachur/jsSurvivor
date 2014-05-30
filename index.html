@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>jsSurvivor</title>
+
+    <link rel="stylesheet" href="dist/main.css"/>
+
+</head>
+<body>
+
+    <div class="container">
+        <canvas id="mainCanvas"></canvas>
+
+        <div class="infoDiv">
+            <ul>
+                <li>W, A, S, D, arrows - move</li>
+                <li>Space - start/pause</li>
+                <li>Mouse click - shoot</li>
+            </ul>
+            <div>
+                <button id="startButton">Play</button>
+                <button id="stopButton" disabled="disabled">Pause</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="images">
+        <img id="playerSprites" src="dist/player.png">
+        <img id="medkitSprite" src="dist/medkit.png">
+        <img id="crosshairSprites" src="dist/crosshairs.png">
+        <img id="enemySprite" src="dist/enemy.png">
+        <img id="deadEnemySprite" src="dist/enemy_dead.png">
+        <img id="backgroundSprite" src="dist/background.jpg">
+    </div>
+
+    <script src="dist/jsSurvivor.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+body {
+    overflow: hidden;
+    font-family: Arial;
+}
+
+.container {
+    height: 900px;
+    width: 1150px;
+    overflow: hidden;
+}
+
+#mainCanvas {
+    display: block;
+    float: left;
+    width: 900px;
+    cursor: none;
+    border : 1px solid black;
+}
+
+.infoDiv {
+    float: left;
+    width: 230px;
+    padding-left: 15px;
+}
+
+#startButton {
+    background-color: cornsilk;
+    line-height: 27px;
+    font: large Arial;
+    width: 70px;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+#stopButton {
+    background-color: coral;
+    line-height: 27px;
+    font: large Arial;
+    width: 70px;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+button:disabled {
+    opacity: 0.7;
+    border: 2px solid grey !important;
+}
+
+.images {
+    display: none;
+}
