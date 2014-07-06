@@ -7,6 +7,10 @@ var RES = {
         img: document.getElementById('medkitSprite'),
         spriteSize: 182
     },
+    grenade: {
+        img: document.getElementById('grenadeSprite'),
+        spriteSize: 230
+    },
     crosshair: {
         img: document.getElementById('crosshairSprites'),
         spriteSize: 81

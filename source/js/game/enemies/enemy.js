@@ -54,6 +54,9 @@ function Enemy(gameInfo, x, y) {
         if (UTILS.random() <= 0.3) {
             var drop = new Medkit(this.gameInfo, this.x, this.y);
             this.gameInfo.gameObjects.push(drop);
+        } else if (UTILS.random() <= 0.6) {
+            var drop = new Grenade(this.gameInfo, this.x, this.y);
+            this.gameInfo.gameObjects.push(drop);
         };
 
         var dead = this.getDead();
