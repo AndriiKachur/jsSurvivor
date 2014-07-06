@@ -1,4 +1,4 @@
-/*! jsSurvivor - v0.1.0 - 2014-05-30
+/*! jsSurvivor - v0.1.0 - 2014-07-06
 * https://github.com/Nilanno/jsSurvivor
 * Copyright (c) 2014 Nilanno;*/
 function ObjectCollider(gameInfo, gameObjects) {
@@ -40,6 +40,8 @@ function Enemy(gameInfo, x, y) {
     this.reloadTime = 1000;
     this.isReloading = false;
     this.score = 1;
+    this.spriteSize = RES.enemy.spriteSize;
+    this.img = RES.enemy.img;
 
     this.collisionTargets[Bullet.name] = function(target) {
         this.health -= target.damage;
@@ -59,10 +61,8 @@ function Enemy(gameInfo, x, y) {
     };
 
     this.draw = function(ctx) {
-        ctx.drawImage(RES.enemy.img,
-            0, 0,
-            RES.enemy.spriteSize, RES.enemy.spriteSize,
-            this.x - this.w/2, this.y - this.h/2, this.w, this.h);
+        ctx.drawImage(this.img, 0, 0, this.spriteSize, this.spriteSize,
+            this.x - this.w / 2, this.y - this.h / 2, this.w, this.h);
     };
 
     this.calculateNextStep = function(dt) {
@@ -82,6 +82,9 @@ function Enemy(gameInfo, x, y) {
     this.dropLoot = function() {
         if (UTILS.random() <= 0.3) {
             var drop = new Medkit(this.gameInfo, this.x, this.y);
+            this.gameInfo.gameObjects.push(drop);
+        } else if (UTILS.random() <= 0.6) {
+            var drop = new Grenade(this.gameInfo, this.x, this.y);
             this.gameInfo.gameObjects.push(drop);
         };
 
@@ -281,6 +284,7 @@ function GameEngine(settings) {
             if (CONSTANTS.direction[key] && gameInfo.direction.indexOf(key) < 0) {
                 gameInfo.direction += key;
             } else if (key === CONSTANTS.space) {
+                event.preventDefault();
                 if (engine.running) {
                     engine.stop();
                 } else {
@@ -359,6 +363,46 @@ function GameObject(gameInfo) {
 }
 
 GameObject.prototype.fn = GameObject;
+
+function Grenade(gameInfo, x, y) {
+    this.w = this.h = 30;
+    this.wide = 15;
+    this.x = x;
+    this.y = y;
+    this.ttl = 10000;
+    this.health = 1;
+    this.damage = 1000;
+    this.gameInfo = gameInfo;
+
+    UTILS.setTimeout(function() {
+            this.toRemove = true;
+    }, this.ttl, this);
+
+    this.gameInfo = gameInfo;
+
+    this.collisionTargets[Player.name] = function(target) {
+        this.health = 0;
+        this.destroyEnemies();
+        this.checkDead();
+    };
+
+    this.draw = function (ctx) {
+        ctx.drawImage(RES.grenade.img, 0, 0,
+            RES.grenade.spriteSize, RES.grenade.spriteSize, this.x - this.w/2, this.y - this.h/2, this.w, this.h);
+    };
+
+    this.destroyEnemies = function() {
+        gameInfo.gameObjects.forEach(function(obj) {
+            if (obj.fn === Enemy && obj.health > 0 && !obj.dead) {
+                obj.health = 0;
+                obj.checkDead();
+            }
+        });
+    };
+
+}
+Grenade.prototype = new GameObject();
+Grenade.prototype.fn = Grenade;
 
 function Medkit(gameInfo, x, y) {
     this.w = this.h = 20;
@@ -476,7 +520,11 @@ var RES = {
     },
     medkit: {
         img: document.getElementById('medkitSprite'),
-        spriteSize: 250
+        spriteSize: 182
+    },
+    grenade: {
+        img: document.getElementById('grenadeSprite'),
+        spriteSize: 230
     },
     crosshair: {
         img: document.getElementById('crosshairSprites'),
@@ -484,7 +532,7 @@ var RES = {
     },
     enemy: {
         img: document.getElementById('enemySprite'),
-        spriteSize: 245,
+        spriteSize: 190,
         dead: document.getElementById('deadEnemySprite')
     },
     background: {
@@ -680,5 +728,7 @@ window.addEventListener('load', function() {
         gameEngine.stop();
         toggleButtons(false);
     });
+
+    window.scrollTo(0, 0);
 
 }, false);
