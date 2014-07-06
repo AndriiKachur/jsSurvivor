@@ -5,7 +5,7 @@ var RES = {
     },
     medkit: {
         img: document.getElementById('medkitSprite'),
-        spriteSize: 250
+        spriteSize: 182
     },
     crosshair: {
         img: document.getElementById('crosshairSprites'),
@@ -13,7 +13,7 @@ var RES = {
     },
     enemy: {
         img: document.getElementById('enemySprite'),
-        spriteSize: 245,
+        spriteSize: 190,
         dead: document.getElementById('deadEnemySprite')
     },
     background: {

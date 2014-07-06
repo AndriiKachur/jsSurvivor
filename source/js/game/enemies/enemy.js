@@ -11,6 +11,8 @@ function Enemy(gameInfo, x, y) {
     this.reloadTime = 1000;
     this.isReloading = false;
     this.score = 1;
+    this.spriteSize = RES.enemy.spriteSize;
+    this.img = RES.enemy.img;
 
     this.collisionTargets[Bullet.name] = function(target) {
         this.health -= target.damage;
@@ -30,10 +32,8 @@ function Enemy(gameInfo, x, y) {
     };
 
     this.draw = function(ctx) {
-        ctx.drawImage(RES.enemy.img,
-            0, 0,
-            RES.enemy.spriteSize, RES.enemy.spriteSize,
-            this.x - this.w/2, this.y - this.h/2, this.w, this.h);
+        ctx.drawImage(this.img, 0, 0, this.spriteSize, this.spriteSize,
+            this.x - this.w / 2, this.y - this.h / 2, this.w, this.h);
     };
 
     this.calculateNextStep = function(dt) {

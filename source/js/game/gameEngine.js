@@ -169,6 +169,7 @@ function GameEngine(settings) {
             if (CONSTANTS.direction[key] && gameInfo.direction.indexOf(key) < 0) {
                 gameInfo.direction += key;
             } else if (key === CONSTANTS.space) {
+                event.preventDefault();
                 if (engine.running) {
                     engine.stop();
                 } else {
