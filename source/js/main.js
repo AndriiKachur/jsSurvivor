@@ -25,4 +25,6 @@ window.addEventListener('load', function() {
         toggleButtons(false);
     });
 
+    window.scrollTo(0, 0);
+
 }, false);
