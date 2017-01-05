@@ -45,6 +45,7 @@ var UTILS = {
 
     showCollision: function(ctx, obj) {
         ctx.save();
+
         ctx.beginPath();
         ctx.strokeStyle = 'red';
         ctx.arc(obj.x, obj.y, obj.wide, 0, 360, false);
@@ -60,5 +61,9 @@ var UTILS = {
         arr.unshift = function() {
             Array.prototype.push.apply(this, arguments);
         };
+    },
+    
+    radToDegrees: function (rad) {
+        return rad * 180 / Math.PI;
     }
 };

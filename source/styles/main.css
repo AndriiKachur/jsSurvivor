@@ -1,26 +1,24 @@
 body {
     overflow: hidden;
+    width:100%;
     font-family: Arial;
 }
 
 .container {
-    height: 900px;
-    width: 1150px;
     overflow: hidden;
 }
 
 #mainCanvas {
     display: block;
     float: left;
-    width: 900px;
     cursor: none;
     border : 1px solid black;
 }
 
 .infoDiv {
     float: left;
-    width: 230px;
-    padding-left: 15px;
+    width: 140px;
+    padding-left: 5px;
 }
 
 #startButton {

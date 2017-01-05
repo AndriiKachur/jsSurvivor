@@ -4,8 +4,8 @@ window.addEventListener('load', function() {
         stopButton = document.getElementById('stopButton'),
         gameEngine = new GameEngine({
             canvas: canvas,
-            width: 900,
-            height: 500,
+            width: screen.availWidth - 220,//870,
+            height: screen.availHeight - 100,//500,
             toggleGameControls: toggleButtons
         });
 

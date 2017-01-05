@@ -56,7 +56,7 @@ function GameEngine(settings) {
     this.start = function() {
         if (this.running) return;
         if (this.end) this.reset();
-        this.startGenerateEnemies();
+        // this.startGenerateEnemies(); //TODO: remove
         this.running = true;
         engine.lastTimestamp = 0;
         this.render(0);
@@ -95,6 +95,7 @@ function GameEngine(settings) {
             engine.showFPS();
             engine.showScore();
             engine.showHealth();
+            touch.drawControls && touch.drawControls();
             requestAnimationFrame(engine.render, canvas);
         }
     };
@@ -184,6 +185,32 @@ function GameEngine(settings) {
                 gameInfo.direction = gameInfo.direction.replace(key, '');
             }
         };
+
+        if (touch.isTouchDevice()) {
+            touch.drawControls(ctx, gameInfo);
+
+            canvas.addEventListener('touchstart', touch.handleStart, false);
+            canvas.addEventListener('touchend',touch. handleEnd, false);
+            canvas.addEventListener('touchcancel', touch.handleCancel, false);
+            canvas.addEventListener('touchmove', touch.handleMove, false);
+
+            UTILS.setInterval(function () {
+                var angle = touch.getMoveDirection();
+
+                if (!angle) return;
+
+                if (angle.deg <= 45 && angle.deg > -45) {
+                    gameInfo.direction = '' + CONSTANTS.direction.right;
+                } else if (angle.deg > 45 && angle.deg < 135) {
+                    gameInfo.direction = '' + CONSTANTS.direction.down;
+                } else if (angle.deg >= 135 || angle.deg <= -135) {
+                    gameInfo.direction = '' + CONSTANTS.direction.left;
+                } else {
+                    gameInfo.direction = '' + CONSTANTS.direction.up;
+                }
+            }, 1);
+        }
+
     };
 
 }
