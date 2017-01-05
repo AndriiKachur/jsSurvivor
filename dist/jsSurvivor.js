@@ -1,6 +1,6 @@
-/*! jsSurvivor - v0.1.0 - 2014-07-06
+/*! jsSurvivor - v0.1.0 - 2017-01-05
 * https://github.com/Nilanno/jsSurvivor
-* Copyright (c) 2014 Nilanno;*/
+* Copyright (c) 2017 Nilanno;*/
 function ObjectCollider(gameInfo, gameObjects) {
     this.gameInfo = gameInfo;
     this.gameObjects = gameObjects;
@@ -34,7 +34,7 @@ function Enemy(gameInfo, x, y) {
     this.x = x;
     this.y = y;
     this.wide = (this.h + this.w) / 4;
-    this.velocity = 70;
+    this.velocity = UTILS.getSpeed(10);
     this.health = 100;
     this.damage = 4;
     this.reloadTime = 1000;
@@ -118,6 +118,7 @@ function GameEngine(settings) {
         fpsCounter = 0, fpsTime = 0,
         canvas = settings.canvas,
         ctx = canvas.getContext('2d'),
+        touch = null,
         gameInfo = {
             w: settings.width,
             h: settings.height,
@@ -144,27 +145,27 @@ function GameEngine(settings) {
         canvas.height = gameInfo.h;
         ctx.font = 'italic 15pt Arial';
 
-        this.lastTimestamp = null;
-        this.dt = null;
-        this.running = false;
-        this.fps = 0;
-        this.gameInfo = gameInfo;
-        gameInfo.player = this.player = new Player(gameInfo);
-        gameInfo.gameObjects = this.gameObjects = [this.player];
+        engine.lastTimestamp = null;
+        engine.dt = null;
+        engine.running = false;
+        engine.fps = 0;
+        engine.gameInfo = gameInfo;
+        gameInfo.player = engine.player = new Player(gameInfo);
+        gameInfo.gameObjects = engine.gameObjects = [engine.player];
 
         UTILS.inverseArray(gameInfo.gameObjects); // for drawing order
 
-        this.objectCollider = new ObjectCollider(this.gameInfo, this.gameObjects);
-        this.end = '';
+        engine.objectCollider = new ObjectCollider(engine.gameInfo, engine.gameObjects);
+        engine.end = '';
     };
 
     this.reset();
 
     this.shoot = function(isOn) {
-        this.player.weapon.fire = !!isOn;
+        engine.player.weapon.fire = !!isOn;
 
-        if (this.running) {
-            this.player.shoot(isOn);
+        if (engine.running) {
+            engine.player.shoot(isOn);
         }
     };
 
@@ -210,6 +211,7 @@ function GameEngine(settings) {
             engine.showFPS();
             engine.showScore();
             engine.showHealth();
+            touch && touch.drawControls && touch.drawControls();
             requestAnimationFrame(engine.render, canvas);
         }
     };
@@ -299,6 +301,18 @@ function GameEngine(settings) {
                 gameInfo.direction = gameInfo.direction.replace(key, '');
             }
         };
+
+        if (Touch.isTouchDevice()) {
+            touch = new Touch(ctx, gameInfo, engine.shoot);
+
+            touch.drawControls();
+
+            canvas.addEventListener('touchstart', touch.handleStart, false);
+            canvas.addEventListener('touchend',touch. handleEnd, false);
+            canvas.addEventListener('touchcancel', touch.handleCancel, false);
+            canvas.addEventListener('touchmove', touch.handleMove, false);
+        }
+
     };
 
 }
@@ -440,7 +454,7 @@ function Player(gameInfo) {
     this.wide = (this.w + this.h) / 4;
     this.y = gameInfo.h / 2;
     this.x = gameInfo.w / 2;
-    this.velocity = 100;
+    this.velocity = UTILS.getSpeed(8.5);
     this.weapon = new BaseWeapon(this.gameInfo, this);
     this.health = 100;
 
@@ -565,6 +579,200 @@ CONSTANTS.keys = {
     32: CONSTANTS.space
 };
 
+Touch.isTouchDevice = function() {
+    return 'ontouchstart' in window // works on most browsers
+        || 'onmsgesturechange' in window; // works on ie10
+};
+
+function Touch (drawCtx, gameInfo, shootFn) {
+    var touch = this;
+
+    this.ctx = drawCtx;
+    this.gameInfo = gameInfo;
+    this.touches = [];
+    this.shootFn = shootFn;
+    this.fireControl = {
+        x:  0,
+        y: 0,
+        r: 0
+    };
+    this.moveControl = {
+        x:  0,
+        y: 0,
+        r: 0
+    };
+
+    this.ongoingTouchIndexById = function (idToFind) {
+        for (var i = 0; i < this.touches.length; i++) {
+            var id = this.touches[i].identifier;
+            if (id == idToFind) {
+                return i;
+            }
+        }
+        return -1;
+    };
+
+
+    this.drawControls = function() {
+        this.fireControl = {
+            x:  60,
+            y: this.gameInfo.h - 60,
+            r: 60
+        };
+        this.moveControl = {
+            x:  this.gameInfo.w - 60,
+            y: this.gameInfo.h - 60,
+            r: 60
+        };
+
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(this.fireControl.x, this.fireControl.y, this.fireControl.r, 0, 360);
+        this.ctx.fillStyle = 'rgba(160, 22, 22, 0.5)';
+        this.ctx.fill();
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeStyle = '#222';
+        this.ctx.stroke();
+        this.ctx.restore();
+
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(this.moveControl.x, this.moveControl.y, this.moveControl.r, 0, 360);
+        this.ctx.fillStyle = 'rgba(160, 22, 22, 0.5)';
+        this.ctx.fill();
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeStyle = '#222';
+        this.ctx.stroke();
+        this.ctx.restore();
+    };
+
+    this.handleStart = function (evt) {
+        evt.preventDefault();
+        var el = evt.target;
+        var ctx = el.getContext("2d");
+        var touches = evt.changedTouches;
+
+        for (var i = 0; i < touches.length; i++) {
+            touch.touches.push(touch.copyTouch(touches[i]));
+        }
+
+        touch.calculateDirections();
+    };
+    this.handleMove = function (evt) {
+        evt.preventDefault();
+        var el = evt.target;
+        var ctx = el.getContext("2d");
+        var touches = evt.changedTouches;
+
+        for (var i = 0; i < touches.length; i++) {
+            var idx = touch.ongoingTouchIndexById(touches[i].identifier);
+
+            if (idx >= 0) {
+                touch.touches.splice(idx, 1, touch.copyTouch(touches[i]));
+            } else {
+                console.log("can't figure out which touch to continue");
+            }
+        }
+
+        touch.calculateDirections();
+    };
+    this.handleEnd = function (evt) {
+        evt.preventDefault();
+        var el = evt.target;
+        var ctx = el.getContext("2d");
+        var touches = evt.changedTouches;
+
+        for (var i = 0; i < touches.length; i++) {
+            var idx = touch.ongoingTouchIndexById(touches[i].identifier);
+
+            if (idx >= 0) {
+                touch.touches.splice(idx, 1);
+            } else {
+                console.log("can't figure out which touch to end");
+            }
+        }
+
+        touch.calculateDirections();
+    };
+    this.handleCancel = function (evt) {
+        var touches = evt.changedTouches;
+
+        for (var i = 0; i < touches.length; i++) {
+            touch.touches.splice(i, 1);
+        }
+
+        touch.calculateDirections();
+    };
+    this.copyTouch = function (touch) {
+        return { identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY };
+    };
+    this.getFireDirection = function () {
+        var angle = this.getAngle(this.fireControl);
+        if (angle) {
+            return {
+                rad: angle,
+                deg: UTILS.radToDegrees(angle)
+            };
+        }
+        return null;
+    };
+    this.getMoveDirection = function () {
+        var angle = this.getAngle(this.moveControl);
+        if (angle) {
+            return {
+                rad: angle,
+                deg: UTILS.radToDegrees(angle)
+            };
+        }
+        return null;
+    };
+    this.getAngle = function (control) {
+        var angle = null;
+
+        this.touches.some(function (touch) {
+            var distance = UTILS.hypot(control.x, control.y, touch.pageX, touch.pageY);
+
+            if (distance > control.r) return false;
+
+            angle = Math.atan2(touch.pageY - control.y, touch.pageX - control.x);
+
+            return true;
+        });
+
+        return angle;
+    };
+
+    this.calculateDirections = function () {
+        var moveAngle = touch.getMoveDirection(),
+            shootAngle = touch.getFireDirection(),
+            gi = this.gameInfo,
+            dirs = CONSTANTS.direction;
+
+        if (!moveAngle) {
+            gi.direction = '';
+        } if (moveAngle) {
+            if (moveAngle.deg <= 45 && moveAngle.deg > -45) {
+                gi.direction = '' + dirs.right;
+            } else if (moveAngle.deg > 45 && moveAngle.deg < 135) {
+                gi.direction = '' + dirs.down;
+            } else if (moveAngle.deg >= 135 || moveAngle.deg <= -135) {
+                gi.direction = '' + dirs.left;
+            } else {
+                gi.direction = '' + dirs.up;
+            }
+        }
+
+
+        if (!shootAngle) {
+            this.shootFn();
+        } else {
+            this.shootFn(true);
+            gi.mouseX = Math.cos(shootAngle.rad) * 150 + gi.player.x;
+            gi.mouseY = Math.sin(shootAngle.rad) * 150 + gi.player.y;
+        }
+    }
+}
+
 var UTILS = {
     calculateArrayNextStep: function(array, dt, gameInfo) {
         if (!array) return;
@@ -612,6 +820,7 @@ var UTILS = {
 
     showCollision: function(ctx, obj) {
         ctx.save();
+
         ctx.beginPath();
         ctx.strokeStyle = 'red';
         ctx.arc(obj.x, obj.y, obj.wide, 0, 360, false);
@@ -627,6 +836,14 @@ var UTILS = {
         arr.unshift = function() {
             Array.prototype.push.apply(this, arguments);
         };
+    },
+    
+    radToDegrees: function (rad) {
+        return rad * 180 / Math.PI;
+    },
+    
+    getSpeed: function (mult) {
+        return  Math.min(screen.availHeight, screen.availWidth) / mult;
     }
 };
 
@@ -677,9 +894,11 @@ function Bullet(gameInfo, x, y) {
     };
 
     this.draw = function(ctx) {
+        ctx.save();
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.w, 0, 360, false);
         ctx.fill();
+        ctx.restore();
     };
 
     this.calculateNextStep = function(dt) {
@@ -702,14 +921,19 @@ function Bullet(gameInfo, x, y) {
 Bullet.prototype = new GameObject();
 Bullet.prototype.fn = Bullet;
 
-window.addEventListener('load', function() {
+window.addEventListener('load', NewGame, false);
+window.addEventListener('resize', function () {
+    location.reload();
+});
+
+function NewGame() {
     var canvas = document.getElementById('mainCanvas'),
         startButton = document.getElementById('startButton'),
         stopButton = document.getElementById('stopButton'),
         gameEngine = new GameEngine({
             canvas: canvas,
-            width: 900,
-            height: 500,
+            width: screen.availWidth - 220,//870,
+            height: screen.availHeight - 100,//500,
             toggleGameControls: toggleButtons
         });
 
@@ -731,4 +955,4 @@ window.addEventListener('load', function() {
 
     window.scrollTo(0, 0);
 
-}, false);
+}

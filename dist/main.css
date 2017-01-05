@@ -1,26 +1,43 @@
 body {
     overflow: hidden;
+    width:100%;
     font-family: Arial;
 }
 
 .container {
-    height: 900px;
-    width: 1150px;
     overflow: hidden;
+}
+@media only screen and (orientation:portrait){
+    .container {
+        height: 100vmax;
+        -webkit-transform: rotate(90deg);
+        -moz-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+}
+@media only screen and (orientation:landscape){
+    .container {
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
 }
 
 #mainCanvas {
     display: block;
     float: left;
-    width: 900px;
     cursor: none;
     border : 1px solid black;
 }
 
 .infoDiv {
     float: left;
-    width: 230px;
-    padding-left: 15px;
+    width: 140px;
+    padding-left: 5px;
 }
 
 #startButton {
