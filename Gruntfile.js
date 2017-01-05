@@ -115,6 +115,27 @@ module.exports = function(grunt) {
           options: {
               assetsDirs: ['dist']
           }
+      },
+      'http-server': {
+          'dev': {
+              // the server root directory
+              root: '/',
+              port: 8282,
+              host: "127.0.0.1",
+              cache: 5,
+              showDir: true,
+              autoIndex: true,
+              // server default file extension
+              ext: "html",
+              // run in parallel with other tasks
+              runInBackground: true
+          }
+      },
+      connect: {
+          dev: {
+              port: 1337,
+              base: 'source'
+          }
       }
   });
 
@@ -127,6 +148,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-usemin');
+  grunt.loadNpmTasks('grunt-http-server');
+  grunt.loadNpmTasks('grunt-connect');
 
   // Default task.
   grunt.registerTask('default', ['clean', 'copy:dist', 'useminPrepare', 'jshint', 'concat', 'uglify', 'usemin']);

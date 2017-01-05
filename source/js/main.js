@@ -1,11 +1,16 @@
-window.addEventListener('load', function() {
+window.addEventListener('load', NewGame, false);
+window.addEventListener('resize', function () {
+    location.reload();
+});
+
+function NewGame() {
     var canvas = document.getElementById('mainCanvas'),
         startButton = document.getElementById('startButton'),
         stopButton = document.getElementById('stopButton'),
         gameEngine = new GameEngine({
             canvas: canvas,
-            width: 900,
-            height: 500,
+            width: screen.availWidth - 220,//870,
+            height: screen.availHeight - 100,//500,
             toggleGameControls: toggleButtons
         });
 
@@ -27,4 +32,4 @@ window.addEventListener('load', function() {
 
     window.scrollTo(0, 0);
 
-}, false);
+}

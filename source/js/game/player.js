@@ -4,7 +4,7 @@ function Player(gameInfo) {
     this.wide = (this.w + this.h) / 4;
     this.y = gameInfo.h / 2;
     this.x = gameInfo.w / 2;
-    this.velocity = 100;
+    this.velocity = UTILS.getSpeed(8.5);
     this.weapon = new BaseWeapon(this.gameInfo, this);
     this.health = 100;
 

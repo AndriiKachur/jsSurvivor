@@ -2,6 +2,10 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
+
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
     <title>jsSurvivor</title>
 
     <!-- build:css dist/main.css -->
@@ -12,7 +16,9 @@
 <body>
 
     <div class="container">
-        <canvas id="mainCanvas"></canvas>
+        <canvas id="mainCanvas">
+            Your browser does not support canvas element.
+        </canvas>
 
         <div class="infoDiv">
             <ul>
@@ -45,6 +51,7 @@
     <script type="text/javascript" src="js/game/util/Constants.js"></script>
     <script type="text/javascript" src="js/game/util/Utils.js"></script>
     <script type="text/javascript" src="js/game/util/Resource.js"></script>
+    <script type="text/javascript" src="js/game/util/touchUtils.js"></script>
     <script type="text/javascript" src="js/game/GameEngine.js"></script>
     <script type="text/javascript" src="js/game/ObjectCollider.js"></script>
     <script type="text/javascript" src="js/game/GameObject.js"></script>

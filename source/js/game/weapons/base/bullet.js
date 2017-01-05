@@ -15,9 +15,11 @@ function Bullet(gameInfo, x, y) {
     };
 
     this.draw = function(ctx) {
+        ctx.save();
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.w, 0, 360, false);
         ctx.fill();
+        ctx.restore();
     };
 
     this.calculateNextStep = function(dt) {
