@@ -65,5 +65,9 @@ var UTILS = {
     
     radToDegrees: function (rad) {
         return rad * 180 / Math.PI;
+    },
+    
+    getSpeed: function (mult) {
+        return  Math.min(screen.availHeight, screen.availWidth) / mult;
     }
 };

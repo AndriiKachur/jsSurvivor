@@ -5,7 +5,7 @@ function Enemy(gameInfo, x, y) {
     this.x = x;
     this.y = y;
     this.wide = (this.h + this.w) / 4;
-    this.velocity = 70;
+    this.velocity = UTILS.getSpeed(10);
     this.health = 100;
     this.damage = 4;
     this.reloadTime = 1000;

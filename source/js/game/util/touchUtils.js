@@ -1,20 +1,27 @@
-var touch = {
-    ctx: null,
-    gameInfo: null,
-    touches: [],
-    gameInfo: null,
-    fireControl: {
-        x:  0,
-        y: 0,
-        r: 0
-    },
-    moveControl: {
-        x:  0,
-        y: 0,
-        r: 0
-    },
+Touch.isTouchDevice = function() {
+    return 'ontouchstart' in window // works on most browsers
+        || 'onmsgesturechange' in window; // works on ie10
+};
 
-    ongoingTouchIndexById: function (idToFind) {
+function Touch (drawCtx, gameInfo, shootFn) {
+    var touch = this;
+
+    this.ctx = drawCtx;
+    this.gameInfo = gameInfo;
+    this.touches = [];
+    this.shootFn = shootFn;
+    this.fireControl = {
+        x:  0,
+        y: 0,
+        r: 0
+    };
+    this.moveControl = {
+        x:  0,
+        y: 0,
+        r: 0
+    };
+
+    this.ongoingTouchIndexById = function (idToFind) {
         for (var i = 0; i < this.touches.length; i++) {
             var id = this.touches[i].identifier;
             if (id == idToFind) {
@@ -22,19 +29,10 @@ var touch = {
             }
         }
         return -1;
-    },
-    isTouchDevice: function() {
-        return true; //TODO: remove after debug
-        return 'ontouchstart' in window // works on most browsers
-            || 'onmsgesturechange' in window; // works on ie10
-    },
+    };
 
-    drawControls: function(ctx, gameInfo) {
-        if (ctx) this.ctx = ctx;
-        if (gameInfo) this.gameInfo = gameInfo;
 
-        ctx = ctx || this.ctx;
-
+    this.drawControls = function() {
         this.fireControl = {
             x:  60,
             y: this.gameInfo.h - 60,
@@ -46,24 +44,28 @@ var touch = {
             r: 60
         };
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(this.fireControl.x, this.fireControl.y);
-        ctx.arc(this.fireControl.x, this.fireControl.y, this.fireControl.r, 0, 360);
-        ctx.fillStyle = 'rgba(55, 160, 23, 0.5)';
-        ctx.fill();
-        ctx.restore();
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(this.fireControl.x, this.fireControl.y, this.fireControl.r, 0, 360);
+        this.ctx.fillStyle = 'rgba(160, 22, 22, 0.5)';
+        this.ctx.fill();
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeStyle = '#222';
+        this.ctx.stroke();
+        this.ctx.restore();
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(this.moveControl.x, this.moveControl.y);
-        ctx.arc(this.moveControl.x, this.moveControl.y, this.moveControl.r, 0, 360);
-        ctx.fillStyle = 'rgba(160, 22, 22, 0.5)';
-        ctx.fill();
-        ctx.restore();
-    },
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.arc(this.moveControl.x, this.moveControl.y, this.moveControl.r, 0, 360);
+        this.ctx.fillStyle = 'rgba(160, 22, 22, 0.5)';
+        this.ctx.fill();
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeStyle = '#222';
+        this.ctx.stroke();
+        this.ctx.restore();
+    };
 
-    handleStart: function (evt) {
+    this.handleStart = function (evt) {
         evt.preventDefault();
         var el = evt.target;
         var ctx = el.getContext("2d");
@@ -72,8 +74,10 @@ var touch = {
         for (var i = 0; i < touches.length; i++) {
             touch.touches.push(touch.copyTouch(touches[i]));
         }
-    },
-    handleMove: function (evt) {
+
+        touch.calculateDirections();
+    };
+    this.handleMove = function (evt) {
         evt.preventDefault();
         var el = evt.target;
         var ctx = el.getContext("2d");
@@ -88,8 +92,10 @@ var touch = {
                 console.log("can't figure out which touch to continue");
             }
         }
-    },
-    handleEnd: function (evt) {
+
+        touch.calculateDirections();
+    };
+    this.handleEnd = function (evt) {
         evt.preventDefault();
         var el = evt.target;
         var ctx = el.getContext("2d");
@@ -104,18 +110,22 @@ var touch = {
                 console.log("can't figure out which touch to end");
             }
         }
-    },
-    handleCancel: function (evt) {
+
+        touch.calculateDirections();
+    };
+    this.handleCancel = function (evt) {
         var touches = evt.changedTouches;
 
         for (var i = 0; i < touches.length; i++) {
             touch.touches.splice(i, 1);
         }
-    },
-    copyTouch:function (touch) {
+
+        touch.calculateDirections();
+    };
+    this.copyTouch = function (touch) {
         return { identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY };
-    },
-    getFireDirection: function () {
+    };
+    this.getFireDirection = function () {
         var angle = this.getAngle(this.fireControl);
         if (angle) {
             return {
@@ -124,8 +134,8 @@ var touch = {
             };
         }
         return null;
-    },
-    getMoveDirection: function () {
+    };
+    this.getMoveDirection = function () {
         var angle = this.getAngle(this.moveControl);
         if (angle) {
             return {
@@ -134,8 +144,8 @@ var touch = {
             };
         }
         return null;
-    },
-    getAngle: function (control) {
+    };
+    this.getAngle = function (control) {
         var angle = null;
 
         this.touches.some(function (touch) {
@@ -149,5 +159,35 @@ var touch = {
         });
 
         return angle;
+    };
+
+    this.calculateDirections = function () {
+        var moveAngle = touch.getMoveDirection(),
+            shootAngle = touch.getFireDirection(),
+            gi = this.gameInfo,
+            dirs = CONSTANTS.direction;
+
+        if (!moveAngle) {
+            gi.direction = '';
+        } if (moveAngle) {
+            if (moveAngle.deg <= 45 && moveAngle.deg > -45) {
+                gi.direction = '' + dirs.right;
+            } else if (moveAngle.deg > 45 && moveAngle.deg < 135) {
+                gi.direction = '' + dirs.down;
+            } else if (moveAngle.deg >= 135 || moveAngle.deg <= -135) {
+                gi.direction = '' + dirs.left;
+            } else {
+                gi.direction = '' + dirs.up;
+            }
+        }
+
+
+        if (!shootAngle) {
+            this.shootFn();
+        } else {
+            this.shootFn(true);
+            gi.mouseX = Math.cos(shootAngle.rad) * 150 + gi.player.x;
+            gi.mouseY = Math.sin(shootAngle.rad) * 150 + gi.player.y;
+        }
     }
-};
+}

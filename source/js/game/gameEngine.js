@@ -3,6 +3,7 @@ function GameEngine(settings) {
         fpsCounter = 0, fpsTime = 0,
         canvas = settings.canvas,
         ctx = canvas.getContext('2d'),
+        touch = null,
         gameInfo = {
             w: settings.width,
             h: settings.height,
@@ -29,34 +30,34 @@ function GameEngine(settings) {
         canvas.height = gameInfo.h;
         ctx.font = 'italic 15pt Arial';
 
-        this.lastTimestamp = null;
-        this.dt = null;
-        this.running = false;
-        this.fps = 0;
-        this.gameInfo = gameInfo;
-        gameInfo.player = this.player = new Player(gameInfo);
-        gameInfo.gameObjects = this.gameObjects = [this.player];
+        engine.lastTimestamp = null;
+        engine.dt = null;
+        engine.running = false;
+        engine.fps = 0;
+        engine.gameInfo = gameInfo;
+        gameInfo.player = engine.player = new Player(gameInfo);
+        gameInfo.gameObjects = engine.gameObjects = [engine.player];
 
         UTILS.inverseArray(gameInfo.gameObjects); // for drawing order
 
-        this.objectCollider = new ObjectCollider(this.gameInfo, this.gameObjects);
-        this.end = '';
+        engine.objectCollider = new ObjectCollider(engine.gameInfo, engine.gameObjects);
+        engine.end = '';
     };
 
     this.reset();
 
     this.shoot = function(isOn) {
-        this.player.weapon.fire = !!isOn;
+        engine.player.weapon.fire = !!isOn;
 
-        if (this.running) {
-            this.player.shoot(isOn);
+        if (engine.running) {
+            engine.player.shoot(isOn);
         }
     };
 
     this.start = function() {
         if (this.running) return;
         if (this.end) this.reset();
-        // this.startGenerateEnemies(); //TODO: remove
+        this.startGenerateEnemies();
         this.running = true;
         engine.lastTimestamp = 0;
         this.render(0);
@@ -95,7 +96,7 @@ function GameEngine(settings) {
             engine.showFPS();
             engine.showScore();
             engine.showHealth();
-            touch.drawControls && touch.drawControls();
+            touch && touch.drawControls && touch.drawControls();
             requestAnimationFrame(engine.render, canvas);
         }
     };
@@ -186,29 +187,15 @@ function GameEngine(settings) {
             }
         };
 
-        if (touch.isTouchDevice()) {
-            touch.drawControls(ctx, gameInfo);
+        if (Touch.isTouchDevice()) {
+            touch = new Touch(ctx, gameInfo, engine.shoot);
+
+            touch.drawControls();
 
             canvas.addEventListener('touchstart', touch.handleStart, false);
             canvas.addEventListener('touchend',touch. handleEnd, false);
             canvas.addEventListener('touchcancel', touch.handleCancel, false);
             canvas.addEventListener('touchmove', touch.handleMove, false);
-
-            UTILS.setInterval(function () {
-                var angle = touch.getMoveDirection();
-
-                if (!angle) return;
-
-                if (angle.deg <= 45 && angle.deg > -45) {
-                    gameInfo.direction = '' + CONSTANTS.direction.right;
-                } else if (angle.deg > 45 && angle.deg < 135) {
-                    gameInfo.direction = '' + CONSTANTS.direction.down;
-                } else if (angle.deg >= 135 || angle.deg <= -135) {
-                    gameInfo.direction = '' + CONSTANTS.direction.left;
-                } else {
-                    gameInfo.direction = '' + CONSTANTS.direction.up;
-                }
-            }, 1);
         }
 
     };

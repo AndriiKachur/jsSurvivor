@@ -1,4 +1,9 @@
-window.addEventListener('load', function() {
+window.addEventListener('load', NewGame, false);
+window.addEventListener('resize', function () {
+    location.reload();
+});
+
+function NewGame() {
     var canvas = document.getElementById('mainCanvas'),
         startButton = document.getElementById('startButton'),
         stopButton = document.getElementById('stopButton'),
@@ -27,4 +32,4 @@ window.addEventListener('load', function() {
 
     window.scrollTo(0, 0);
 
-}, false);
+}
