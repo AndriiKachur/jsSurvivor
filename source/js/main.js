@@ -1,16 +1,18 @@
 window.addEventListener('load', NewGame, false);
-window.addEventListener('resize', function () {
+window.addEventListener('orientationchange', function () {
     location.reload();
 });
 
 function NewGame() {
-    var canvas = document.getElementById('mainCanvas'),
+    var infoDiv = document.querySelector('.infoDiv'),
+        isPhablet = getComputedStyle(infoDiv).display === 'none',
+        canvas = document.getElementById('mainCanvas'),
         startButton = document.getElementById('startButton'),
         stopButton = document.getElementById('stopButton'),
         gameEngine = new GameEngine({
             canvas: canvas,
-            width: screen.availWidth - 220,//870,
-            height: screen.availHeight - 100,//500,
+            width: window.innerWidth - (isPhablet ? 0 : 150),
+            height: window.innerHeight,
             toggleGameControls: toggleButtons
         });
 

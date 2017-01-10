@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
 
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
 
     <title>jsSurvivor</title>
 
@@ -20,16 +20,18 @@
             Your browser does not support canvas element.
         </canvas>
 
+        <div class="controls">
+            <button id="startButton">Play</button>
+            <button id="stopButton" disabled="disabled">Pause</button>
+        </div>
+
         <div class="infoDiv">
             <ul>
                 <li>W, A, S, D, arrows - move</li>
                 <li>Space - start/pause</li>
                 <li>Mouse click - shoot</li>
             </ul>
-            <div>
-                <button id="startButton">Play</button>
-                <button id="stopButton" disabled="disabled">Pause</button>
-            </div>
+
             <div>
                 <a href="https://github.com/Nilanno/jsSurvivor" target="_blank">View Source</a>
             </div>

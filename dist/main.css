@@ -2,29 +2,20 @@ body {
     overflow: hidden;
     width:100%;
     font-family: Arial;
+    margin: 0;
+}
+
+@media only screen
+and (min-device-width: 320px)
+and (max-device-width: 641px)
+and (-webkit-min-device-pixel-ratio: 2) {
+    .infoDiv {
+        display: none !important;
+    }
 }
 
 .container {
     overflow: hidden;
-}
-@media only screen and (orientation:portrait){
-    .container {
-        height: 100vmax;
-        -webkit-transform: rotate(90deg);
-        -moz-transform: rotate(90deg);
-        -o-transform: rotate(90deg);
-        -ms-transform: rotate(90deg);
-        transform: rotate(90deg);
-    }
-}
-@media only screen and (orientation:landscape){
-    .container {
-        -webkit-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        -ms-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
 }
 
 #mainCanvas {
@@ -38,6 +29,12 @@ body {
     float: left;
     width: 140px;
     padding-left: 5px;
+}
+
+.controls {
+    position: absolute;
+    bottom: 0;
+    left: calc(50% - 75px);
 }
 
 #startButton {
